@@ -7,6 +7,8 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
+CPUS=$(grep -c 'processor' /proc/cpuinfo)
+CTHREADS="-j${CPUS}";
 args=("$@")
 ubootdir=${args[0]}
 binarydir="$(dirname "$(pwd)")/boards/udoo-neo"
@@ -14,8 +16,8 @@ targetfile="uboot.imx"
 
 cd $ubootdir
 ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make clean
-ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make udoo_neo_config
-ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make -j8
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make udoo_neo_defconfig
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make $CTHREADS
 cd -
 
 if [ ! -e $ubootdir/SPL ]; then
